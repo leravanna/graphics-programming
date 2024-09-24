@@ -78,7 +78,7 @@ function intersectRayWithSphere(rayOrigin, rayDirection, sphere) {
 
 // trace  ray and determine the closest intersecting sphere
 function traceRay(rayOrigin, rayDirection, minT, maxT) {
-    let closestIntersectionDistance = Infinity; // Track the smallest t (closest intersection)
+    let closestIntersectionDistance = Infinity; // Track the smallest t - the closest intersection
     let closestSphere = null; // Track the sphere closest to the ray
 
     spheres.forEach(sphere => {
