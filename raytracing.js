@@ -45,59 +45,68 @@ const spheres = [
 
 
 
+function calculateDiscriminant(a, b, c) {
+    return b * b - 4 * a * c;
+}
+
+function solveQuadratic(a, b, discriminant) {
+    const sqrtDiscriminant = Math.sqrt(discriminant);
+    const root1 = (-b + sqrtDiscriminant) / (2 * a);
+    const root2 = (-b - sqrtDiscriminant) / (2 * a);
+    return [root1, root2];
+}
+
 // intersection of a ray with a sphere
 function intersectRayWithSphere(rayOrigin, rayDirection, sphere) {
-    // Vector from ray origin to sphere center
+    // Compute vector from ray origin to sphere center
     const originToCenter = rayOrigin.sub(sphere.center);
 
-    // Coefficients for the quadratic equation
-    const a = rayDirection.dot(rayDirection); // a = direction dot direction
+    // Calculate quadratic coefficients (a, b, and c)
+    const a = rayDirection.dot(rayDirection);  // a = direction dot direction
     const b = 2 * originToCenter.dot(rayDirection); // b = 2 * (origin - center) dot direction
-    const c = originToCenter.dot(originToCenter) - sphere.radius * sphere.radius; // c = (origin - center) dot (origin - center) - radius^2
+    const c = originToCenter.dot(originToCenter) - Math.pow(sphere.radius, 2); // c = (origin - center) dot (origin - center) - radius^2
 
-    // Discriminant of the quadratic equation
-    const discriminant = b * b - 4 * a * c;
+    const discriminant = calculateDiscriminant(a, b, c);
 
-    // If the discriminant is negative, there's no real intersection
     if (discriminant < 0) {
         return [Infinity, Infinity]; // No intersection
     }
 
-    const t1 = (-b + Math.sqrt(discriminant)) / (2 * a);
-    const t2 = (-b - Math.sqrt(discriminant)) / (2 * a);
-
-    return [t1, t2]; //two intersection points
+    // find intersection points
+    return solveQuadratic(a, b, discriminant);
 }
 
-// Function to trace a ray and find the closest sphere it intersects
+// trace  ray and determine the closest intersecting sphere
 function traceRay(rayOrigin, rayDirection, minT, maxT) {
-    let closestIntersection = Infinity;
-    let closestSphere = null;
+    let closestIntersectionDistance = Infinity; // Track the smallest t (closest intersection)
+    let closestSphere = null; // Track the sphere closest to the ray
 
-    for (let i = 0; i < spheres.length; i++) {
-        const sphere = spheres[i];
-
+    spheres.forEach(sphere => {
+        // Get the two possible intersection points (t1, t2) for the current sphere
         const [t1, t2] = intersectRayWithSphere(rayOrigin, rayDirection, sphere);
 
-        if (t1 < closestIntersection && t1 > minT && t1 < maxT) {
-            closestIntersection = t1;
+        // Update the closest intersection if t1 is valid and closer
+        if (t1 > minT && t1 < maxT && t1 < closestIntersectionDistance) {
+            closestIntersectionDistance = t1;
             closestSphere = sphere;
         }
 
-        if (t2 < closestIntersection && t2 > minT && t2 < maxT) {
-            closestIntersection = t2;
+        // Update the closest intersection if t2 is valid and closer
+        if (t2 > minT && t2 < maxT && t2 < closestIntersectionDistance) {
+            closestIntersectionDistance = t2;
             closestSphere = sphere;
         }
+    });
+
+    // If no sphere was intersected, return a default background color (white)
+    if (!closestSphere) {
+        return new Color(255, 255, 255);
     }
 
-    // If no sphere was hit, return a default background color (white)
-    if (closestSphere == null) {
-        return new Color(255, 255, 255); // White background
-    }
-
-    // Return the color of the closest sphere hit by the ray
+    // Return the color of the closest intersected sphere
     return closestSphere.color;
 }
+
 
 
 
