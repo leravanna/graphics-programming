@@ -1,0 +1,14 @@
+{
+  "name": "graphics-programming",
+  "version": "1.0.0",
+  "dependencies": {
+    "@types/node": "22.7.4",
+    "typescript": "5.6.2",
+    "vite": "5.4.8"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  }
+}

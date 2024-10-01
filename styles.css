@@ -1,0 +1,103 @@
+/* Общие стили для контейнеров */
+div {
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+label {
+    display: flex;
+    flex-direction: column;
+    font-size: x-small;
+    margin-right: 10px;
+}
+
+p{
+    width: 40px;
+    padding: 5px;
+    margin-right: 10px;
+    font-size: x-small;
+}
+
+input[type="number"] {
+    width: 40px;
+    padding: 5px;
+    margin-right: 10px;
+    font-size: small;
+}
+
+select{
+    width: 80px;
+    padding: 5px;
+    margin-right: 10px;
+}
+
+button {
+    padding: 5px 10px;
+    margin-top: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Стили для блоков ввода */
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Расстояние между полями */
+}
+
+.container div {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.hContainer{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.addContainer{
+    border: 1px solid lightgreen;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 8px;
+}
+
+#addLightButton, #addSphereButton {
+    background-color: limegreen;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#addLightButton:hover, #addSphereButton:hover {
+    background-color: green;
+
+}
+
+.container div input, .container div select {
+    flex-shrink: 0;
+}
+
+#addSphereButton, #addLightButton {
+    margin-top: 15px;
+}
+
+strong {
+    display: block;
+    margin-bottom: 5px;
+}

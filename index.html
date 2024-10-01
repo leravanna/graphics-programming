@@ -1,14 +1,58 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raytracing</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
+<div >
 <h1>Raytracing</h1>
-<canvas height="500" id="canvas" style="border: 1px black solid" width="500"></canvas>
-<script src="raytracing.js"></script>
-</body>
+    <canvas id="canvas" width="500" height="500" style="border: 1px solid black;"></canvas>
 
+<div>
+    <h2>Spheres</h2>
+    <div id="spheresContainer"></div>
+    <div class="addContainer">
+        <p>ADD</p>
+        <label>X: <input type="number" id="newSphereX"></label>
+        <label>Y: <input type="number" id="newSphereY"></label>
+        <label>Z: <input type="number" id="newSphereZ"></label>
+        <label>Radius: <input type="number" id="newSphereRadius"></label>
+        <label>R: <input type="number" id="newSphereR" max="255" min="0"></label>
+        <label>G: <input type="number" id="newSphereG" max="255" min="0"></label>
+        <label>B: <input type="number" id="newSphereB" max="255" min="0"></label>
+        <button id="addSphereButton">+</button></div>
+</div>
+
+<div>
+    <h2>Освещение</h2>
+    <div id="lightsContainer"></div>
+    <div class="addContainer">
+    <p>ADD</p>
+    <label>Type:
+        <select id="newLightType">
+            <option value="ambient">Ambient</option>
+            <option value="point">Point</option>
+            <option value="directional">Directional</option>
+        </select>
+    </label>
+    <label>Int: <input type="number" id="newLightIntensity" step="0.1"></label>
+    <label>X: <input type="number" id="newLightX"></label>
+    <label>Y: <input type="number" id="newLightY"></label>
+    <label>Z: <input type="number" id="newLightZ"></label>
+    <button id="addLightButton" class="addButton">+</button></div>
+</div>
+
+<div>
+
+
+</div>
+
+
+
+<script type="module" src="/src/main.ts"></script>
+</div>
+</body>
 </html>
