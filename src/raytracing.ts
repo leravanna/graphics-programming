@@ -269,7 +269,7 @@ function computeLighting(
         return;
       }
 
-      const [shadowIntersectionDistance, shadowSphere] = closestIntersection(
+      const [, shadowSphere] = closestIntersection(
         point,
         vectorL,
         0.001,
