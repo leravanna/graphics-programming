@@ -2,9 +2,10 @@ import { renderScene } from './raytracing';
 import { Sphere, Vector, Color, Light } from './raytracing';
 
 let spheres = [
-    new Sphere(new Vector(0, -3, 4), 2, new Color(255, 0, 0), 10),
-    new Sphere(new Vector(-2, 0, 4), 1, new Color(0, 255, 0), 500),
+    new Sphere(new Vector(0, -1, 3), 1, new Color(255, 0, 0), 500),
     new Sphere(new Vector(2, 0, 4), 1, new Color(0, 0, 255), 500),
+    new Sphere(new Vector(-2, 0, 4), 1, new Color(0, 255, 0), 10),
+    new Sphere(new Vector(-2, -5001, 0), 5000, new Color(255, 255, 0), 1000),
 ];
 
 let lights = [
