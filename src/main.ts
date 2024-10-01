@@ -2,9 +2,9 @@ import { renderScene } from './raytracing';
 import { Sphere, Vector, Color, Light } from './raytracing';
 
 let spheres = [
-    new Sphere(new Vector(0, -3, 4), 2, new Color(255, 0, 0)),
-    new Sphere(new Vector(-2, 0, 4), 1, new Color(0, 255, 0)),
-    new Sphere(new Vector(2, 0, 4), 1, new Color(0, 0, 255)),
+    new Sphere(new Vector(0, -3, 4), 2, new Color(255, 0, 0), 10),
+    new Sphere(new Vector(-2, 0, 4), 1, new Color(0, 255, 0), 500),
+    new Sphere(new Vector(2, 0, 4), 1, new Color(0, 0, 255), 500),
 ];
 
 let lights = [
@@ -20,7 +20,7 @@ const scene = {
 
 function updateSpheresList() {
     const spheresContainer = document.getElementById("spheresContainer")!;
-    spheresContainer.innerHTML = ""; // Очищаем контейнер
+    spheresContainer.innerHTML = "";
 
     scene.spheres.forEach((sphere, index) => {
         const sphereElement = document.createElement("div");
@@ -35,6 +35,7 @@ function updateSpheresList() {
       <label>R: <input type="number" id="sphere-color-r-${index}" value="${sphere.color.r}" max="255" min="0"></label>
       <label>G: <input type="number" id="sphere-color-g-${index}" value="${sphere.color.g}" max="255" min="0"></label>
       <label>B: <input type="number" id="sphere-color-b-${index}" value="${sphere.color.b}" max="255" min="0"></label>
+      <label>Spec: <input type="number" id="sphere-color-s-${index}" value="${sphere.specular}" max="2000" min="0"></label>
       <button id="delete-sphere-${index}">X</button>
       </div>
     `;
@@ -47,6 +48,7 @@ function updateSpheresList() {
         (document.getElementById(`sphere-color-r-${index}`) as HTMLInputElement).addEventListener("input", () => updateSphere(index));
         (document.getElementById(`sphere-color-g-${index}`) as HTMLInputElement).addEventListener("input", () => updateSphere(index));
         (document.getElementById(`sphere-color-b-${index}`) as HTMLInputElement).addEventListener("input", () => updateSphere(index));
+        (document.getElementById(`sphere-color-s-${index}`) as HTMLInputElement).addEventListener("input", () => updateSphere(index));
 
         (document.getElementById(`delete-sphere-${index}`) as HTMLButtonElement).addEventListener("click", () => {
             deleteSphere(index);
@@ -91,13 +93,12 @@ document.getElementById("addSphereButton")?.addEventListener("click", () => {
     const g = parseInt((document.getElementById("newSphereG") as HTMLInputElement).value);
     const b = parseInt((document.getElementById("newSphereB") as HTMLInputElement).value);
 
-    const newSphere = new Sphere(new Vector(x, y, z), radius, new Color(r, g, b));
+    const newSphere = new Sphere(new Vector(x, y, z), radius, new Color(r, g, b), 500);
     scene.spheres.push(newSphere);
     updateSpheresList();
     renderScene(scene);
 });
 
-// Добавление нового источника света
 document.getElementById("addLightButton")?.addEventListener("click", () => {
     const type = (document.getElementById("newLightType") as HTMLSelectElement).value;
     const intensity = parseFloat((document.getElementById("newLightIntensity") as HTMLInputElement).value);
@@ -111,7 +112,6 @@ document.getElementById("addLightButton")?.addEventListener("click", () => {
     renderScene(scene);
 });
 
-// Функция для обновления параметров сферы
 function updateSphere(index: number) {
     const sphere = scene.spheres[index];
     sphere.center.x = parseFloat((document.getElementById(`sphere-center-x-${index}`) as HTMLInputElement).value);
@@ -121,11 +121,11 @@ function updateSphere(index: number) {
     sphere.color.r = parseInt((document.getElementById(`sphere-color-r-${index}`) as HTMLInputElement).value);
     sphere.color.g = parseInt((document.getElementById(`sphere-color-g-${index}`) as HTMLInputElement).value);
     sphere.color.b = parseInt((document.getElementById(`sphere-color-b-${index}`) as HTMLInputElement).value);
+    sphere.specular = parseInt((document.getElementById(`sphere-color-s-${index}`) as HTMLInputElement).value);
 
     renderScene(scene);
 }
 
-// Функция для обновления параметров освещения
 function updateLight(index: number) {
     const light = scene.lights[index];
     light.intensity = parseFloat((document.getElementById(`light-intensity-${index}`) as HTMLInputElement).value);

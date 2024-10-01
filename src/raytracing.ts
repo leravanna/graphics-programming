@@ -54,11 +54,13 @@ export class Sphere {
     center: Vector;
     radius: number;
     color: Color;
+    specular: number;
 
-    constructor(center: Vector, radius: number, color: Color) {
+    constructor(center: Vector, radius: number, color: Color, specular: number) {
         this.center = center;
         this.radius = radius;
         this.color = color;
+        this.specular = specular;
     }
 }
 
@@ -165,7 +167,10 @@ function traceRay(rayOrigin: Vector, rayDirection: Vector, minT: number, maxT: n
     const point = rayOrigin.add(rayDirection.mul(closestIntersectionDistance));
     let normal = point.sub((closestSphere as Sphere).center);
     normal = normal.mul(1.0 / normal.length());
-    return (closestSphere as Sphere).color.mul(computeLighting(point, normal, lights));
+
+    const view = rayDirection.mul(-1);
+    const computedLight = computeLighting(point, normal, lights, (closestSphere as Sphere).specular, view);
+    return (closestSphere as Sphere).color.mul(computedLight);
 }
 
 function intersectRayWithSphere(rayOrigin: Vector, rayDirection: Vector, sphere: Sphere): [number, number] {
@@ -184,7 +189,7 @@ function intersectRayWithSphere(rayOrigin: Vector, rayDirection: Vector, sphere:
     return solveQuadratic(a, b, discriminant);
 }
 
-function computeLighting(point: Vector, normal: Vector, sceneLights: Light[]): number {
+function computeLighting(point: Vector, normal: Vector, sceneLights: Light[], specular: number, viewVector: Vector): number {
     let intensity = 0;
     sceneLights.forEach((light) => {
         if (light.type === lightTypes.ambient) {
@@ -200,10 +205,22 @@ function computeLighting(point: Vector, normal: Vector, sceneLights: Light[]): n
                 return;
             }
 
+            //diffuse light
             let normalDotL = normal.dot(vectorL);
             if (normalDotL > 0) {
                 intensity += (light.intensity * normalDotL) / (normal.length() * vectorL.length());
             }
+
+            //specular light
+            if (specular > 0){
+                const vectorR = normal.mul(2*normalDotL).sub(vectorL);
+                const vectorRDotV = vectorR.dot(viewVector);
+                if (vectorRDotV > 0) {
+                    intensity += light.intensity * Math.pow(vectorRDotV / (vectorR.length() * viewVector.length()), specular);
+                }
+
+            }
+
         }
     });
     return intensity;
