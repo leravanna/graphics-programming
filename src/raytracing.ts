@@ -16,6 +16,13 @@ export class Color {
       Math.min(255, Math.max(0, this.b * intensity))
     );
   }
+  add(color: Color): Color {
+    return new Color(
+      Math.min(255, Math.max(0, this.r + color.r)),
+      Math.min(255, Math.max(0, this.g + color.g)),
+      Math.min(255, Math.max(0, this.b + color.b))
+    );
+  }
 }
 
 export class Vector {
@@ -55,12 +62,20 @@ export class Sphere {
   radius: number;
   color: Color;
   specular: number;
+  reflective: number;
 
-  constructor(center: Vector, radius: number, color: Color, specular: number) {
+  constructor(
+    center: Vector,
+    radius: number,
+    color: Color,
+    specular: number,
+    reflective: number
+  ) {
     this.center = center;
     this.radius = radius;
     this.color = color;
     this.specular = specular;
+    this.reflective = reflective;
   }
 }
 
@@ -193,7 +208,8 @@ function traceRay(
   minT: number,
   maxT: number,
   spheres: Sphere[],
-  lights: Light[]
+  lights: Light[],
+  recursionDepth = 1
 ): Color {
   const [closestIntersectionDistance, closestSphere] = closestIntersection(
     rayOrigin,
@@ -204,7 +220,7 @@ function traceRay(
   );
 
   if (!closestSphere) {
-    return new Color(255, 255, 255);
+    return new Color(0, 0, 0);
   }
 
   const point = rayOrigin.add(rayDirection.mul(closestIntersectionDistance));
@@ -220,7 +236,26 @@ function traceRay(
     view,
     spheres
   );
-  return (closestSphere as Sphere).color.mul(computedLight);
+
+  const localColor = (closestSphere as Sphere).color.mul(computedLight);
+  const reflection = (closestSphere as Sphere).reflective;
+  if (recursionDepth <= 0 || reflection <= 0) {
+    return localColor;
+  }
+
+  const reflectedRay = reflectRay(rayDirection.mul(-1), normal);
+  const reflectedColor = traceRay(
+    point,
+    reflectedRay,
+    0.001,
+    Infinity,
+    spheres,
+    lights,
+    recursionDepth - 1
+  );
+  return localColor.mul(1 - reflection).add(reflectedColor.mul(reflection));
+
+  //(closestSphere as Sphere).color.mul(computedLight);
 }
 
 function intersectRayWithSphere(
@@ -241,6 +276,10 @@ function intersectRayWithSphere(
   }
 
   return solveQuadratic(a, b, discriminant);
+}
+
+function reflectRay(ray: Vector, normal: Vector): Vector {
+  return normal.mul(2 * normal.dot(ray)).sub(ray);
 }
 
 function computeLighting(
@@ -287,7 +326,7 @@ function computeLighting(
 
         //specular light
         if (specular > 0) {
-          const vectorR = normal.mul(2 * normalDotL).sub(vectorL);
+          const vectorR = reflectRay(vectorL, normal);
           const vectorRDotV = vectorR.dot(viewVector);
           if (vectorRDotV > 0) {
             intensity +=
