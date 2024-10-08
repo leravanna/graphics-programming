@@ -3,58 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raytracing</title>
+    <title>Raytracing and Rasterizer</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div >
-<h1>Raytracing</h1>
-    <canvas id="canvas" width="500" height="500" style="border: 1px solid black;"></canvas>
-
 <div>
-    <h2>Spheres</h2>
-    <div id="spheresContainer"></div>
-    <div class="addContainer">
-        <p>ADD</p>
-        <label>X: <input type="number" id="newSphereX"></label>
-        <label>Y: <input type="number" id="newSphereY"></label>
-        <label>Z: <input type="number" id="newSphereZ"></label>
-        <label>Radius: <input type="number" id="newSphereRadius"></label>
-        <label>R: <input type="number" id="newSphereR" max="255" min="0"></label>
-        <label>G: <input type="number" id="newSphereG" max="255" min="0"></label>
-        <label>B: <input type="number" id="newSphereB" max="255" min="0"></label>
-        <label>Spec: <input type="number" id="newSphereS" max="2000" min="0"></label>
-        <label>Ref: <input type="number" id="newSphereReflective" max="1" min="0" step="0.1"></label>
-        <button id="addSphereButton">+</button></div>
-</div>
+    <div class="hContainer">
+        <div class="vContainer">
 
-<div>
-    <h2>Light</h2>
-    <div id="lightsContainer"></div>
-    <div class="addContainer">
-    <p>ADD</p>
-    <label>Type:
-        <select id="newLightType">
-            <option value="ambient">Ambient</option>
-            <option value="point">Point</option>
-            <option value="directional">Directional</option>
-        </select>
-    </label>
-    <label>Int: <input type="number" id="newLightIntensity" step="0.1"></label>
-    <label>X: <input type="number" id="newLightX"></label>
-    <label>Y: <input type="number" id="newLightY"></label>
-    <label>Z: <input type="number" id="newLightZ"></label>
-    <button id="addLightButton" class="addButton">+</button></div>
-</div>
+            <h1>Raytracing</h1>
+            <canvas id="canvas" width="500" height="500" style="border: 1px solid black;"></canvas>
+        </div>
+        <div class="vContainer">
+            <h1>Rasterizing</h1>
 
-<div>
+            <canvas id="canvasRasterizer" width="500" height="500" style="border: 1px solid black;"></canvas>
+        </div>
+    </div>
+    <div>
+        <h2>Spheres</h2>
+        <div id="spheresContainer"></div>
+        <div class="addContainer">
+            <p>ADD</p>
+            <label>X: <input type="number" id="newSphereX"></label>
+            <label>Y: <input type="number" id="newSphereY"></label>
+            <label>Z: <input type="number" id="newSphereZ"></label>
+            <label>Radius: <input type="number" id="newSphereRadius"></label>
+            <label>R: <input type="number" id="newSphereR" max="255" min="0"></label>
+            <label>G: <input type="number" id="newSphereG" max="255" min="0"></label>
+            <label>B: <input type="number" id="newSphereB" max="255" min="0"></label>
+            <label>Spec: <input type="number" id="newSphereS" max="2000" min="0"></label>
+            <label>Ref: <input type="number" id="newSphereReflective" max="1" min="0" step="0.1"></label>
+            <button id="addSphereButton">+</button>
+        </div>
+    </div>
+
+    <div>
+        <h2>Light</h2>
+        <div id="lightsContainer"></div>
+        <div class="addContainer">
+            <p>ADD</p>
+            <label>Type:
+                <select id="newLightType">
+                    <option value="ambient">Ambient</option>
+                    <option value="point">Point</option>
+                    <option value="directional">Directional</option>
+                </select>
+            </label>
+            <label>Int: <input type="number" id="newLightIntensity" step="0.1"></label>
+            <label>X: <input type="number" id="newLightX"></label>
+            <label>Y: <input type="number" id="newLightY"></label>
+            <label>Z: <input type="number" id="newLightZ"></label>
+            <button id="addLightButton" class="addButton">+</button>
+        </div>
+    </div>
+
+    <div>
 
 
-</div>
+    </div>
 
 
-
-<script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/main.ts"></script>
 </div>
 </body>
 </html>

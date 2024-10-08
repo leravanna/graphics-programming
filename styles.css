@@ -14,7 +14,7 @@ label {
     font-size: x-small;
 }
 
-p{
+p {
     width: 20px;
     padding: 5px;
     font-size: x-small;
@@ -26,7 +26,7 @@ input[type="number"] {
     font-size: small;
 }
 
-select{
+select {
     width: 80px;
     padding: 5px;
 }
@@ -57,7 +57,7 @@ button:hover {
     justify-content: flex-start;
 }
 
-.hContainer{
+.hContainer {
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -65,10 +65,16 @@ button:hover {
 
 }
 
-.hContainer>label{
+.vContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.hContainer > label {
     margin-left: 10px;
 }
-.addContainer{
+
+.addContainer {
     border: 1px solid lightgreen;
     display: flex;
     align-items: center;
@@ -76,7 +82,7 @@ button:hover {
     padding: 8px;
 }
 
-.addContainer>label{
+.addContainer > label {
     margin-left: 10px;
 }
 
@@ -96,7 +102,6 @@ button:hover {
 .container div input, .container div select {
     flex-shrink: 0;
 }
-
 
 
 strong {
