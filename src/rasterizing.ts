@@ -1,4 +1,4 @@
-import {Color, PutPixel} from "./raytracing";
+import {Color} from "./raytracing";
 
 class Point {
     x: number;
@@ -10,12 +10,30 @@ class Point {
     }
 }
 
-const canvas = document.getElementById("canvasRasterizer") as HTMLCanvasElement;
-const ctx = canvas.getContext("2d");
+let canvas = document.getElementById("canvasRasterizer") as HTMLCanvasElement;
+let ctx = canvas.getContext("2d");
+let rasterizedImage = ctx?.getImageData(0, 0, canvas.width, canvas.height);
 
 
-function drawLine(p0: Point, p1: Point, color: Color, canvasImage: ImageData) {
-    if (!canvasImage) {
+function PutPixel(x: number,
+                  y: number,
+                  color: Color) {
+    if (!rasterizedImage) return;
+    x = canvas.width / 2 + (x | 0);
+    y = canvas.height / 2 - (y | 0) - 1;
+
+    if (x < 0 || x >= canvas.width || y < 0 || y >= canvas.height) {
+        return;
+    }
+    let offset = 4 * (x + rasterizedImage.width * y);
+    rasterizedImage.data[offset++] = color.r;
+    rasterizedImage.data[offset++] = color.g;
+    rasterizedImage.data[offset++] = color.b;
+    rasterizedImage.data[offset++] = 255;
+}
+
+function drawLine(p0: Point, p1: Point, color: Color) {
+    if (!rasterizedImage) {
         return;
     }
     let point0 = p0;
@@ -25,14 +43,13 @@ function drawLine(p0: Point, p1: Point, color: Color, canvasImage: ImageData) {
 
     if (Math.abs(dx) > Math.abs(dy)) {
         //line is more horizontal
-        if (p0.x > p1.x) {
-
+        if (dx < 0) {
             point0 = p1;
             point1 = p0;
         }
         const ys = interpolate(point0.x, point0.y, point1.x, point1.y);
         for (let x = point0.x; x <= point1.x; x++) {
-            PutPixel(x, ys[x - point0.x | 0], color, canvasImage);
+            PutPixel(x, ys[x - point0.x | 0], color);
         }
 
     } else {
@@ -46,7 +63,7 @@ function drawLine(p0: Point, p1: Point, color: Color, canvasImage: ImageData) {
 
 
         for (let y = point0.y; y <= point1.y; y++) {
-            PutPixel(xs[y - point0.y | 0], y, color, canvasImage);
+            PutPixel(xs[y - point0.y | 0], y, color);
 
         }
 
@@ -54,17 +71,17 @@ function drawLine(p0: Point, p1: Point, color: Color, canvasImage: ImageData) {
 
 }
 
-function drawWireframeTriangle(p0: Point, p1: Point, p2: Point, color: Color, image: ImageData) {
-    drawLine(p0, p1, color, image);
-    drawLine(p1, p2, color, image);
-    drawLine(p2, p0, color, image);
+function drawWireframeTriangle(p0: Point, p1: Point, p2: Point, color: Color) {
+    drawLine(p0, p1, color);
+    drawLine(p1, p2, color);
+    drawLine(p2, p0, color);
 
 
 }
 
 function interpolate(i0: number, d0: number, i1: number, d1: number): number[] {
 
-    if (i0 === i1) {
+    if (i0 == i1) {
         return [d0];
     }
     const values: number[] = [];
@@ -81,14 +98,12 @@ function interpolate(i0: number, d0: number, i1: number, d1: number): number[] {
 export function renderRasterScene() {
 
 
-    if (!ctx) return;
-    const rasterizedImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    if (!ctx || !rasterizedImage) return;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // drawLine(new Point(-200, -100), new Point(240, 120), new Color(0, 0, 0), rasterizedImage);
-    // drawLine(new Point(-50, -200), new Point(60, 240), new Color(0, 0, 0), rasterizedImage);
+    // drawLine(new Point(-200, -100), new Point(240, 120), new Color(0, 0, 0));
+    // drawLine(new Point(-50, -200), new Point(60, 240), new Color(0, 0, 0));
 
-    drawWireframeTriangle(new Point(-200, -250), new Point(200, 50), new Point(20, 250), new Color(0, 0, 0), rasterizedImage)
+    drawWireframeTriangle(new Point(-200, -250), new Point(200, 50), new Point(20, 250), new Color(0, 0, 0))
     ctx.putImageData(rasterizedImage, 0, 0);
 
 }
