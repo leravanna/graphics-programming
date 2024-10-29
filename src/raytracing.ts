@@ -1,62 +1,6 @@
-export class Color {
-    r: number;
-    g: number;
-    b: number;
+import {Color} from "./helpers/color";
+import {Vector} from "./helpers/vector";
 
-    constructor(r: number, g: number, b: number) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-    }
-
-    mul(intensity: number): Color {
-        return new Color(
-            Math.min(255, Math.max(0, this.r * intensity)),
-            Math.min(255, Math.max(0, this.g * intensity)),
-            Math.min(255, Math.max(0, this.b * intensity))
-        );
-    }
-
-    add(color: Color): Color {
-        return new Color(
-            Math.min(255, Math.max(0, this.r + color.r)),
-            Math.min(255, Math.max(0, this.g + color.g)),
-            Math.min(255, Math.max(0, this.b + color.b))
-        );
-    }
-}
-
-export class Vector {
-    x: number;
-    y: number;
-    z: number;
-
-    constructor(x: number, y: number, z: number) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-
-    dot(vec: Vector): number {
-        return this.x * vec.x + this.y * vec.y + this.z * vec.z;
-    }
-
-    sub(vec: Vector): Vector {
-        return new Vector(this.x - vec.x, this.y - vec.y, this.z - vec.z);
-    }
-
-    mul(n: number): Vector {
-        return new Vector(this.x * n, this.y * n, this.z * n);
-    }
-
-    add(vec: Vector): Vector {
-        return new Vector(this.x + vec.x, this.y + vec.y, this.z + vec.z);
-    }
-
-    length(): number {
-        return Math.sqrt(this.dot(this));
-    }
-}
 
 export class Sphere {
     center: Vector;

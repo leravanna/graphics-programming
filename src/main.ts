@@ -1,6 +1,8 @@
 import {renderScene} from "./raytracing";
-import {Sphere, Vector, Color, Light} from "./raytracing";
+import {Sphere, Light} from "./raytracing";
 import {renderRasterScene} from "./rasterizing";
+import {Vector} from "./helpers/vector";
+import {Color} from "./helpers/color";
 
 let spheres = [
     new Sphere(new Vector(0, -1, 3), 1, new Color(255, 0, 0), 500, 0.2),
