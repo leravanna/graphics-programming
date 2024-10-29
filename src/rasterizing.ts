@@ -5,15 +5,25 @@ class Point {
     }
 }
 
+
+class Vertex {
+    constructor(public x: number, public y: number, public z: number) {
+    }
+}
+
 class Rasterizer {
     private canvas: HTMLCanvasElement;
     private readonly ctx: CanvasRenderingContext2D | null;
     private readonly rasterizedImage: ImageData | null;
+    private viewPortSize: number;
+    private projectionPlaneZ: number;
 
     constructor(canvasId: string) {
         this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
         this.ctx = this.canvas.getContext("2d");
         this.rasterizedImage = this.ctx?.getImageData(0, 0, this.canvas.width, this.canvas.height) ?? null;
+        this.viewPortSize = 1;
+        this.projectionPlaneZ = 1;
     }
 
     private toCanvasCoordinates(x: number, y: number): [number, number] {
@@ -125,21 +135,72 @@ class Rasterizer {
 
     }
 
+
+    private viewportToCanvas(p2d: Point): Point {
+        console.log('inside viewport to canvas', p2d);
+        const convertedPoint = new Point(
+            p2d.x * this.canvas.width / this.viewPortSize,
+            p2d.y * this.canvas.height / this.viewPortSize
+        );
+        console.log('converted point', convertedPoint)
+        return new Point(
+            p2d.x * this.canvas.width / this.viewPortSize,
+            p2d.y * this.canvas.height / this.viewPortSize
+        );
+    }
+
+    private projectVertex(v: Vertex): Point {
+
+        return this.viewportToCanvas(new Point(
+            v.x * this.projectionPlaneZ / v.z,
+            v.y * this.projectionPlaneZ / v.z
+        ));
+    }
+
+    private drawWireframeCube(vertices: Vertex[], colorX: Color, colorY: Color, colorZ: Color): void {
+        const projectedVertices = vertices.map(v => this.projectVertex(v)); // Arrow function maintains `this` context
+
+        this.drawLine(projectedVertices[0], projectedVertices[1], colorX);
+        this.drawLine(projectedVertices[1], projectedVertices[2], colorX);
+        this.drawLine(projectedVertices[2], projectedVertices[3], colorX);
+        this.drawLine(projectedVertices[3], projectedVertices[0], colorX);
+
+        this.drawLine(projectedVertices[4], projectedVertices[5], colorY);
+        this.drawLine(projectedVertices[5], projectedVertices[6], colorY);
+        this.drawLine(projectedVertices[6], projectedVertices[7], colorY);
+        this.drawLine(projectedVertices[7], projectedVertices[4], colorY);
+
+        for (let i = 0; i < 4; i++) {
+            this.drawLine(projectedVertices[i], projectedVertices[i + 4], colorZ);
+        }
+    }
+
+
     public render(): void {
         if (!this.ctx || !this.rasterizedImage) return;
+        //
+        // this.drawWireframeTriangle(
+        //     new Point(-200, -250),
+        //     new Point(200, 50),
+        //     new Point(20, 250),
+        //     new Color(0, 0, 0)
+        // );
+        // this.drawFilledTriangle(
+        //     new Point(-200, -250),
+        //     new Point(200, 50),
+        //     new Point(20, 250),
+        //     new Color(255, 0, 0)
+        // );
 
-        this.drawWireframeTriangle(
-            new Point(-200, -250),
-            new Point(200, 50),
-            new Point(20, 250),
-            new Color(0, 0, 0)
-        );
-        this.drawFilledTriangle(
-            new Point(-200, -250),
-            new Point(200, 50),
-            new Point(20, 250),
-            new Color(255, 0, 0)
-        );
+        const vertices = [
+            new Vertex(-2, -0.5, 5), new Vertex(-2, 0.5, 5), new Vertex(-1, 0.5, 5), new Vertex(-1, -0.5, 5), // front face
+            new Vertex(-2, -0.5, 6), new Vertex(-2, 0.5, 6), new Vertex(-1, 0.5, 6), new Vertex(-1, -0.5, 6)  // back face
+        ];
+        const RED = new Color(255, 0, 0);
+        const GREEN = new Color(0, 255, 0);
+        const BLUE = new Color(0, 0, 255);
+
+        this.drawWireframeCube(vertices, BLUE, RED, GREEN);
 
         this.ctx.putImageData(this.rasterizedImage, 0, 0);
     }
