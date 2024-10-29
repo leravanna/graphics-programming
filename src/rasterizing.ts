@@ -81,6 +81,49 @@ class Rasterizer {
         this.drawLine(p2, p0, color);
     }
 
+    private drawFilledTriangle(p0: Point, p1: Point, p2: Point, color: Color): void {
+        let point0 = p0;
+        let point1 = p1;
+        let point2 = p2;
+
+        if (p1.y < p0.y) {
+            point0 = p1;
+            point1 = p0;
+        }
+        if (p2.y < p0.y) {
+            point0 = p2;
+            point2 = p0;
+        }
+        if (p2.y < p1.y) {
+            point1 = p2;
+            point2 = p1;
+        }
+
+        const x01 = this.interpolate(point0.y, point0.x, point1.y, point1.x);
+        const x12 = this.interpolate(point1.y, point1.x, point2.y, point2.x);
+        const x02 = this.interpolate(point0.y, point0.x, point2.y, point2.x);
+
+        x01.pop();
+        const x012 = x01.concat(x12);
+
+        let xLeft: number[], xRight: number[];
+        const mid = Math.floor(x02.length / 2);
+        if (x02[mid] < x012[mid]) {
+            xLeft = x02;
+            xRight = x012;
+        } else {
+            xLeft = x012;
+            xRight = x02;
+        }
+
+        for (let y = p0.y; y <= p2.y; y++) {
+            for (let x = xLeft[y - p0.y]; x <= xRight[y - p0.y]; x++) {
+                this.putPixel(x, y, color);
+            }
+        }
+       
+    }
+
     public render(): void {
         if (!this.ctx || !this.rasterizedImage) return;
 
@@ -89,6 +132,12 @@ class Rasterizer {
             new Point(200, 50),
             new Point(20, 250),
             new Color(0, 0, 0)
+        );
+        this.drawFilledTriangle(
+            new Point(-200, -250),
+            new Point(200, 50),
+            new Point(20, 250),
+            new Color(255, 0, 0)
         );
 
         this.ctx.putImageData(this.rasterizedImage, 0, 0);
