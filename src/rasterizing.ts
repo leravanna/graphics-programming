@@ -81,47 +81,48 @@ class Rasterizer {
         this.drawLine(p2, p0, color);
     }
 
-    private drawFilledTriangle(p0: Point, p1: Point, p2: Point, color: Color): void {
-        let point0 = p0;
-        let point1 = p1;
-        let point2 = p2;
 
-        if (p1.y < p0.y) {
-            point0 = p1;
-            point1 = p0;
-        }
-        if (p2.y < p0.y) {
-            point0 = p2;
-            point2 = p0;
-        }
-        if (p2.y < p1.y) {
-            point1 = p2;
-            point2 = p1;
-        }
+    private sortVerticesByY(p0: Point, p1: Point, p2: Point): [Point, Point, Point] {
+        const points = [p0, p1, p2].sort((a, b) => a.y - b.y);
+        return [points[0], points[1], points[2]];
+    }
 
-        const x01 = this.interpolate(point0.y, point0.x, point1.y, point1.x);
-        const x12 = this.interpolate(point1.y, point1.x, point2.y, point2.x);
-        const x02 = this.interpolate(point0.y, point0.x, point2.y, point2.x);
+    private assignEdges(x01: number[], x12: number[], x02: number[], x_left: number[], x_right: number[]): void {
+        // Remove the last element of x01 to avoid duplication in the merged array
+        const mergedShortSides = x01.slice(0, -1).concat(x12);
+        const midIndex = Math.floor(x02.length / 2);
 
-        x01.pop();
-        const x012 = x01.concat(x12);
-
-        let xLeft: number[], xRight: number[];
-        const mid = Math.floor(x02.length / 2);
-        if (x02[mid] < x012[mid]) {
-            xLeft = x02;
-            xRight = x012;
+        // Determine which merged side is left or right based on midpoint comparison
+        if (x02[midIndex] < mergedShortSides[midIndex]) {
+            x_left.push(...x02);
+            x_right.push(...mergedShortSides);
         } else {
-            xLeft = x012;
-            xRight = x02;
+            x_left.push(...mergedShortSides);
+            x_right.push(...x02);
         }
+    }
 
-        for (let y = p0.y; y <= p2.y; y++) {
-            for (let x = xLeft[y - p0.y]; x <= xRight[y - p0.y]; x++) {
+    private fillTriangle(startY: number, endY: number, x_left: number[], x_right: number[], color: Color): void {
+        for (let y = startY; y <= endY; y++) {
+            for (let x = x_left[y - startY]; x <= x_right[y - startY]; x++) {
                 this.putPixel(x, y, color);
             }
         }
-       
+    }
+
+    private drawFilledTriangle(p0: Point, p1: Point, p2: Point, color: Color): void {
+        [p0, p1, p2] = this.sortVerticesByY(p0, p1, p2);
+
+        const x01 = this.interpolate(p0.y, p0.x, p1.y, p1.x);
+        const x12 = this.interpolate(p1.y, p1.x, p2.y, p2.x);
+        const x02 = this.interpolate(p0.y, p0.x, p2.y, p2.x);
+
+        const x_left: number[] = [];
+        const x_right: number[] = [];
+        this.assignEdges(x01, x12, x02, x_left, x_right);
+
+        this.fillTriangle(p0.y, p2.y, x_left, x_right, color);
+
     }
 
     public render(): void {
